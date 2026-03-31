@@ -1,0 +1,142 @@
+{% extends "home.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h2>Planillas de Nómina</h2>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-primary text-white py-3">
+                <h5 class="card-title mb-0 text-center fs-6 fw-semibold">Filtros de Nómina</h5>
+            </div>
+            <form method="POST" action="/nomina">
+                <div class="card-body py-4">
+                    <div class="row g-3">
+                        <!-- Fecha Inicio -->
+                        <div class="col-md-3 col-sm-6 mb-3">
+                            <label for="fecha_inicio" class="form-label fw-semibold">Fecha Inicio</label>
+                            <input type="date"
+                                   class="form-control form-control-sm"
+                                   id="fecha_inicio"
+                                   name="fecha_inicio"
+                                   value="{{ fecha_inicio }}"
+                                   required>
+                        </div>
+
+                        <!-- Fecha Fin -->
+                        <div class="col-md-3 col-sm-6 mb-3">
+                            <label for="fecha_fin" class="form-label fw-semibold">Fecha Fin</label>
+                            <input type="date"
+                                   class="form-control form-control-sm"
+                                   id="fecha_fin"
+                                   name="fecha_fin"
+                                   value="{{ fecha_fin }}"
+                                   required>
+                        </div>
+
+                        <!-- Tipo de Planilla -->
+                        <div class="col-md-3 col-sm-6 mb-3">
+                            <label for="tipo_planilla" class="form-label fw-semibold">Tipo de Planilla</label>
+                            <select class="form-select form-select-sm rounded-3"
+                                    id="tipo_planilla"
+                                    name="tipo_planilla"
+                                    required>
+                                <option value="">Seleccionar...</option>
+                                {% for clase, descripcion in tipos_planilla %}
+                                    <option value="{{ clase }}"
+                                            {% if tipo_planilla == clase %}selected{% endif %}>
+                                        {{ clase }} - {{ descripcion }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- Número de Planilla -->
+                        <div class="col-md-3 col-sm-6 mb-3">
+                            <label for="numero_planilla" class="form-label fw-semibold">Número de Planilla</label>
+                            <input type="text"
+                                   class="form-control form-control-sm"
+                                   id="numero_planilla"
+                                   name="numero_planilla"
+                                   value="{{ numero_planilla|default('') }}">
+                        </div>
+                    </div>
+
+                    <!-- Mensaje de error -->
+                    {% if error %}
+                        <div class="alert alert-danger alert-dismissible fade show mb-0 mt-3 small" role="alert">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                            {{ error }}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="card-footer text-end">
+                    <button type="submit" class="btn btn-primary btn-lg px-4 py-2 shadow-sm fw-semibold">
+                        <i class="bi bi-search fs-5 me-2"></i> Consultar Nómina
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center bg-primary">
+                <h5 class="card-title mb-0 text-white">Resultados de Nómina</h5>
+                <span class="badge bg-secondary">{{ datos_nomina|length }} registros</span>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-striped mb-0">
+    <thead class="table-light">
+        <tr>
+            <th>Tipo Planilla</th>
+            <th>Nº Planilla</th>
+            <th>Periodo</th>
+            <th>Fecha Inicial</th>
+            <th>Fecha Fin</th>
+            <th>Contrato</th>
+            <th>Empleado</th>
+            <th>Cédula</th>
+            <th>Tipo Nomina</th>
+            <th>Concepto</th>
+            <th>Base</th>
+            <th>Devengo</th>
+            <th>Deducción</th>
+
+        </tr>
+    </thead>
+    <tbody>
+        {% for fila in datos_nomina %}
+        <tr>
+            <td>{{ fila.tipo }}</td>
+            <td>{{ fila.numero }}</td>
+            <td>{{ fila.periodo }}</td>
+            <td>{{ fila.fecha_inicial }}</td>
+            <td>{{ fila.fecha_final }}</td>
+            <td>{{ fila.contrato }}</td>
+            <td>{{ fila.empleado }}</td>
+            <td>{{ fila.cedula }}</td>
+            <td>{{ fila.nombre_tipo_nom }}</td>
+            <td>{{ fila.nombre_concepto }}</td>
+            <td>{{ fila.base }}</td>
+            <td class="fw-bold text-success">{{ fila.devengo }}</td>
+            <td class="fw-bold text-danger">{{ fila.deduccion }}</td>
+
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
