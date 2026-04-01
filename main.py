@@ -1,11 +1,13 @@
+from datetime import date, timedelta
+from typing import Annotated
+
 from fastapi import FastAPI, Request, Form
 from fastapi.responses import HTMLResponse, RedirectResponse
-from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
-from typing import Annotated, Optional
-from db.firebird import (authenticate_user, get_tipos_planilla, query_nomina, query_certificado_laboral,
-                         query_certificado_ingresos, get_anios, query_vacaciones)
-from datetime import date, timedelta
+from fastapi.templating import Jinja2Templates
+
+from db.firebird import (authenticate_user, get_tipos_planilla, query_nomina_detalle, query_certificado_laboral,
+                         query_certificado_ingresos, get_anios, query_vacaciones, query_nomina_encabezado)
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")  # ← Línea clave
@@ -27,6 +29,7 @@ def home(request: Request):
     if not session_token:
         return RedirectResponse("/", status_code=303)
 
+    titulo = "Principal"
     cod_personal = request.cookies.get("cod_personal", "")
     nombre = request.cookies.get("nombre", "Usuario")
     email = request.cookies.get("email", "")
@@ -38,6 +41,7 @@ def home(request: Request):
             "request": request,
             "cod_personal": cod_personal,
             "nombre": nombre,
+            "titulo": titulo,
             "email": email
         }
     )
@@ -82,6 +86,7 @@ def nomina(request: Request):
     email = request.cookies.get("email", "")
     hoy = date.today()
     mes_pasado = hoy - timedelta(days=30)
+    titulo = "Planillas de nomina"
 
     return jinja2_template.TemplateResponse(
         request=request,
@@ -95,53 +100,91 @@ def nomina(request: Request):
             "tipos_planilla": get_tipos_planilla("PL"),
             "numero_planilla": "",
             "datos_nomina": [],
+            "titulo": titulo,
             "error": None
         }
     )
 
+@app.post("/nomina/detalle")
+def ver_detalle_nomina(
+    request: Request,
+    fecha_inicio: Annotated[str, Form()],
+    fecha_fin: Annotated[str, Form()],
+    tipo: Annotated[str, Form()],
+    numero: Annotated[int, Form()]
+):
+    try:
+        cod_personal = int(request.cookies.get("cod_personal", 0))
+        inicio = date.fromisoformat(fecha_inicio)
+        fin = date.fromisoformat(fecha_fin)
+
+        detalle = query_nomina_detalle(
+            cod_personal=cod_personal,
+            desde=inicio,
+            hasta=fin,
+            tipo=tipo,
+            numero=numero
+        )
+
+        return jinja2_template.TemplateResponse(
+            request=request,
+            name="partials/detalle_nomina.html",
+            context={
+                "request": request,
+                "detalle": detalle,
+                "tipo": tipo,
+                "numero": numero
+            }
+        )
+
+    except ValueError:
+        return jinja2_template.TemplateResponse(
+            request=request,
+            name="partials/detalle_nomina.html",
+            context={
+                "request": request,
+                "detalle": [],
+                "tipo": tipo,
+                "numero": numero,
+                "error": "Fechas inválidas"
+            }
+        )
+
 
 @app.post("/nomina")
-def consultar_nomina(
+def consultar_nominas(
         request: Request,
         fecha_inicio: Annotated[str, Form()],
         fecha_fin: Annotated[str, Form()],
         tipo_planilla: Annotated[str, Form()],
         numero_planilla: Annotated[str | None, Form()] = None
 ):
-    nombre = request.cookies.get("nombre", "Usuario")
-    email = request.cookies.get("email", "")
-    cod_personal = int(request.cookies.get("cod_personal", 0))
     try:
+        cod_personal = int(request.cookies.get("cod_personal", 0))
         inicio = date.fromisoformat(fecha_inicio)
         fin = date.fromisoformat(fecha_fin)
+
         if inicio > fin:
             return jinja2_template.TemplateResponse(
                 request=request,
-                name="nomina.html",
+                name="partials/tabla_nomina.html",
                 context={
-                    "request": request, "nombre": nombre, "email": email,
-                    "fecha_inicio": fecha_inicio, "fecha_fin": fecha_fin,
-                    "tipo_planilla": tipo_planilla, "numero_planilla": numero_planilla or "",
-                    "tipos_planilla": get_tipos_planilla("PL"),
-                    "datos_nomina": [],
-                    "error": "Fecha inicio no puede ser mayor a fecha fin"
+                    "request": request,
+                    "datos_nomina": []
                 }
             )
+
     except ValueError:
         return jinja2_template.TemplateResponse(
             request=request,
-            name="nomina.html",
+            name="partials/tabla_nomina.html",
             context={
-                "request": request, "nombre": nombre, "email": email,
-                "fecha_inicio": fecha_inicio, "fecha_fin": fecha_fin,
-                "tipo_planilla": tipo_planilla, "numero_planilla": numero_planilla or "",
-                "tipos_planilla": get_tipos_planilla("PL"),
-                "datos_nomina": [],
-                "error": "Formato de fecha inválido"
+                "request": request,
+                "datos_nomina": []
             }
         )
 
-    datos_nomina = query_nomina(
+    datos_nomina = query_nomina_encabezado(
         cod_personal=cod_personal,
         desde=inicio,
         hasta=fin,
@@ -151,14 +194,10 @@ def consultar_nomina(
 
     return jinja2_template.TemplateResponse(
         request=request,
-        name="nomina.html",
+        name="partials/tabla_nomina.html",
         context={
-            "request": request, "nombre": nombre, "email": email,
-            "fecha_inicio": fecha_inicio, "fecha_fin": fecha_fin,
-            "tipo_planilla": tipo_planilla, "numero_planilla": numero_planilla or "",
-            "tipos_planilla": get_tipos_planilla("PL"),
-            "datos_nomina": datos_nomina,
-            "error": None
+            "request": request,
+            "datos_nomina": datos_nomina
         }
     )
 
@@ -169,9 +208,11 @@ def certificado(request: Request):
     if not session_token:
         return RedirectResponse("/", status_code=303)
 
+    cod_personal = int(request.cookies.get("cod_personal", ""))
     nombre = request.cookies.get("nombre", "Usuario")
     email = request.cookies.get("email", "")
     estado = "Todos"
+    titulo = "Certificados"
 
     return jinja2_template.TemplateResponse(
         request=request,
@@ -181,8 +222,9 @@ def certificado(request: Request):
             "nombre": nombre,
             "email": email,
             "estado": estado,
-            "anios": get_anios(),
+            "anios": get_anios(cod_personal),
             "datos_certificado": [],
+            "titulo": titulo,
             "error": None
         }
     )
@@ -190,13 +232,11 @@ def certificado(request: Request):
 
 @app.post("/certificados")
 def consultar_certificados(
-        request: Request,
-        tipo_certificado: Annotated[str, Form()],
-        estado: Annotated[str | None, Form()] = None,
-        periodo_ingresos: Annotated[int | None, Form()] = None
+    request: Request,
+    tipo_certificado: Annotated[str, Form()],
+    estado: Annotated[str | None, Form()] = None,
+    periodo_ingresos: Annotated[int | None, Form()] = None
 ):
-    nombre = request.cookies.get("nombre", "Usuario")
-    email = request.cookies.get("email", "")
     cod_personal = int(request.cookies.get("cod_personal", 0))
 
     if tipo_certificado == "laboral":
@@ -212,17 +252,13 @@ def consultar_certificados(
 
     return jinja2_template.TemplateResponse(
         request=request,
-        name="Certificado_laboral.html",
+        name="partials/tabla_certificado.html",
         context={
-            "request": request, "nombre": nombre, "email": email,
-            "estado": estado, "periodo_ingresos": periodo_ingresos,
-            "tipo_certificado": tipo_certificado,
+            "request": request,
             "datos_certificado": datos_certificado,
-            "anios": get_anios(),
-            "error": None
+            "tipo_certificado": tipo_certificado
         }
     )
-
 
 @app.get("/vacaciones", response_class=HTMLResponse)
 def vacaciones(request: Request):
@@ -232,6 +268,7 @@ def vacaciones(request: Request):
 
     nombre = request.cookies.get("nombre", "Usuario")
     email = request.cookies.get("email", "")
+    titulo = "Vacaciones"
 
     return jinja2_template.TemplateResponse(
         request=request,
@@ -241,32 +278,50 @@ def vacaciones(request: Request):
             "nombre": nombre,
             "email": email,
             "datos_vacaciones": [],
+            "titulo": titulo,
             "error": None
         }
     )
 
 
 @app.post("/vacaciones")
-def consultar_certificados(
-        request: Request,
-        tipo_vacaciones: Annotated[str, Form()],
+def consultar_vacaciones(
+    request: Request,
+    tipo_vacaciones: Annotated[str, Form()],
 ):
-    nombre = request.cookies.get("nombre", "Usuario")
-    email = request.cookies.get("email", "")
     cod_personal = int(request.cookies.get("cod_personal", 0))
 
     datos_vacaciones = query_vacaciones(cod_personal, tipo_vacaciones)
 
     return jinja2_template.TemplateResponse(
         request=request,
-        name="vacaciones.html",
+        name="partials/tabla_vacaciones.html",
+        context={
+            "request": request,
+            "datos_vacaciones": datos_vacaciones,
+            "tipo_vacaciones": tipo_vacaciones
+        }
+    )
+
+
+@app.get("/ausentismo", response_class=HTMLResponse)
+def ausentismo(request: Request):
+    session_token = request.cookies.get("session_token")
+    if not session_token:
+        return RedirectResponse("/", status_code=303)
+
+    nombre = request.cookies.get("nombre", "Usuario")
+    email = request.cookies.get("email", "")
+    titulo = "Ausentismo"
+
+    return jinja2_template.TemplateResponse(
+        request=request,
+        name="ausentismo.html",
         context={
             "request": request,
             "nombre": nombre,
             "email": email,
-            "tipo_vacaciones": tipo_vacaciones,
-            "datos_vacaciones": datos_vacaciones,
+            "titulo": titulo,
             "error": None
         }
     )
-

@@ -1,0 +1,36 @@
+<div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+        <tr>
+            <th class="small text-muted fw-semibold">Fecha Inicial</th>
+            <th class="small text-muted fw-semibold">Fecha Fin</th>
+            <th class="small text-muted fw-semibold">Cédula</th>
+            <th class="small text-muted fw-semibold">Concepto</th>
+            <th class="small text-muted fw-semibold">Base</th>
+            <th class="small text-muted fw-semibold">Devengo</th>
+            <th class="small text-muted fw-semibold">Deducción</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% if detalle %}
+            {% for fila in detalle %}
+            <tr>
+                <td>{{ fila.fecha_inicial }}</td>
+                <td>{{ fila.fecha_final }}</td>
+                <td>{{ fila.cedula }}</td>
+                <td class="fw-semibold">{{ fila.nombre_concepto }}</td>
+                <td>{{ fila.base }}</td>
+                <td class="fw-bold text-success">{{ fila.devengo }}</td>
+                <td class="fw-bold text-danger">{{ fila.deduccion }}</td>
+            </tr>
+            {% endfor %}
+        {% else %}
+            <tr>
+                <td colspan="7" class="text-center text-muted py-4">
+                    No se encontraron detalles para el registro seleccionado.
+                </td>
+            </tr>
+        {% endif %}
+        </tbody>
+    </table>
+</div>

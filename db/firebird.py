@@ -73,19 +73,21 @@ def get_tipos_planilla(tipo: str = None) -> list[tuple[str, str]]:
             con.close()
 
 
-def get_anios() -> list[str]:
+def get_anios(cod_personal :int) -> list[str]:
     con = None
     try:
         con = get_firebird_connection()
         cur = con.cursor()
 
         sql = """
-            SELECT DISTINCT EXTRACT(YEAR FROM FECHA) AS ANIO
-            FROM nr_rets_personal_mst
-            WHERE FECHA IS NOT NULL
+            SELECT DISTINCT EXTRACT(YEAR FROM E.FECHA) AS ANIO
+            FROM NR_RETS_PERSONAL_MST E
+            INNER JOIN NR_RETS_PERSONAL_DTL D  ON (E.COD_TIPO=D.COD_TIPO)
+            AND (E.NUMERO=D.NUMERO)
+            WHERE E.FECHA IS NOT NULL AND D.COD_PERSONAL = ?
             ORDER BY ANIO DESC
         """
-        cur.execute(sql)
+        cur.execute(sql, (cod_personal,))
         rows = cur.fetchall()
         if rows:
             return [str(row[0]) for row in rows]
@@ -99,7 +101,7 @@ def get_anios() -> list[str]:
             con.close()
 
 
-def query_nomina(cod_personal: int, desde: date, hasta: date, tipo_planilla: str, numero_planilla: str = None) -> list[dict]:
+def query_nomina_detalle(cod_personal: int, desde: date, hasta: date, tipo: str, numero: int = None) -> list[dict]:
     con = None
     try:
         con = get_firebird_connection()
@@ -123,14 +125,10 @@ def query_nomina(cod_personal: int, desde: date, hasta: date, tipo_planilla: str
             AND P.FECHA_INICIAL >= ? 
             AND P.FECHA_INICIAL <= ?
             AND P.COD_TIPO = ?
+            AND P.NUMERO = ?
+            ORDER BY P.FECHA_INICIAL DESC, E.NOMBRE
         """
-        params = [cod_personal, desde, hasta, tipo_planilla]
-
-        if numero_planilla and numero_planilla.strip():
-            sql += " AND P.NUMERO = ?"
-            params.append(numero_planilla.strip())
-
-        sql += " ORDER BY P.FECHA_INICIAL DESC, E.NOMBRE"
+        params = [cod_personal, desde, hasta, tipo, numero]
 
         cur.execute(sql, params)
         rows = cur.fetchall()
@@ -152,6 +150,75 @@ def query_nomina(cod_personal: int, desde: date, hasta: date, tipo_planilla: str
                 "devengo": f"${row[12]:,.0f}" if row[12] else "$0",
                 "deduccion": f"${row[13]:,.0f}" if row[13] else "$0",
                 "neto": f"${(row[12] or 0) - (row[13] or 0):,.0f}"
+            })
+
+        return datos_nomina
+
+    except Exception as e:
+        print(f"Error query nomina: {e}")
+        return []
+    finally:
+        if con:
+            con.close()
+
+
+def query_nomina_encabezado(
+    cod_personal: int,
+    desde: date,
+    hasta: date,
+    tipo_planilla: str,
+    numero_planilla: str = None
+) -> list[dict]:
+    con = None
+    try:
+        con = get_firebird_connection()
+        cur = con.cursor()
+
+        sql = """
+            SELECT DISTINCT
+                P.COD_TIPO, P.NUMERO, P.COD_EMPRESA, P.COD_SUCURSAL,
+                P.FECHA_INICIAL, P.FECHA_FINAL, P.COD_TIPO_NOMINA, P.COD_PERIODO PERIODO,
+                P.COD_PERSONAL, P.COD_VINCULOLB,
+                TN.DESCRIPCION AS NOMBRETN,
+                E.NOMBRE,
+                'PLANILLA' AS LIQUIDADO
+            FROM LIQUIDACIONES P
+            INNER JOIN NR_CLASE_LIQUIDACION TN ON (P.COD_TIPO_NOMINA = TN.COD_TIPO_NOMINA)
+            INNER JOIN NR_DEDUCCION CO ON (P.COD_CONCEPTO = CO.COD_CONCEPTO)
+            INNER JOIN NR_PERSONAL E ON (P.COD_PERSONAL = E.COD_PERSONAL)
+            INNER JOIN NR_PERSONAL_NOMINA_MST MST ON (P.NUMERO = MST.NUMERO)
+            WHERE P.COD_PERSONAL = ?
+              AND P.FECHA_INICIAL >= ?
+              AND P.FECHA_INICIAL <= ?
+              AND P.COD_TIPO = ?
+        """
+        params = [cod_personal, desde, hasta, tipo_planilla]
+
+        if numero_planilla and numero_planilla.strip():
+            sql += " AND P.NUMERO = ?"
+            params.append(numero_planilla.strip())
+
+        sql += " ORDER BY P.FECHA_INICIAL DESC, E.NOMBRE"
+
+        cur.execute(sql, params)
+        rows = cur.fetchall()
+
+        datos_nomina = []
+        for row in rows:
+            datos_nomina.append({
+                "tipo": row[0],
+                "numero": row[1],
+                "cod_empresa": row[2],
+                "cod_sucursal": row[3],
+                "fecha_inicial": row[4].strftime("%d-%m-%Y") if row[4] else "",
+                "fecha_final": row[5].strftime("%d-%m-%Y") if row[5] else "",
+                "cod_tipo_nomina": row[6],
+                "periodo": row[7],
+                "cod_personal": row[8],
+                "contrato": row[9],
+                "nombre_tipo_nomina": row[10],
+                "empleado": row[11],
+                "liquidado": row[12],
             })
 
         return datos_nomina
@@ -354,7 +421,8 @@ def query_vacaciones(cod_personal: int, tipo_liq: str) -> list[dict]:
                     "cod_vinculo": row[10] or "",
                     "nombre": row[11] or "",
                     "nombre_tipo_nomina": row[12] or "",
-                    "cod_tipo_nomina": row[13] or ""
+                    "cod_tipo_nomina": row[13] or "",
+                    "dias_diferencia": (row[7] - row[6]).days if row[6] and row[7] else 0
                 })
             return datos_vacaciones
 

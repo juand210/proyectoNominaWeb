@@ -1,0 +1,76 @@
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow-sm border-0 rounded-4">
+            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white py-2 rounded-top-4">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-receipt-cutoff fs-5"></i>
+                    <h5 class="card-title mb-0 fs-6 fw-semibold">Resultados de Nómina</h5>
+                </div>
+                <span class="badge bg-light text-dark rounded-pill">
+                    {{ datos_nomina|length }} registros
+                </span>
+            </div>
+
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                        <tr>
+                            <th class="small text-muted fw-semibold">Tipo Planilla</th>
+                            <th class="small text-muted fw-semibold">Nº Planilla</th>
+                            <th class="small text-muted fw-semibold">Periodo</th>
+                            <th class="small text-muted fw-semibold">Fecha Inicial</th>
+                            <th class="small text-muted fw-semibold">Fecha Fin</th>
+                            <th class="small text-muted fw-semibold">Contrato</th>
+                            <th class="small text-muted fw-semibold">Empleado</th>
+                            <th class="small text-muted fw-semibold">Cédula</th>
+                            <th class="small text-muted fw-semibold text-center">Acciones</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% if datos_nomina %}
+                            {% for fila in datos_nomina %}
+                            <tr>
+                                <td class="fw-semibold">{{ fila.tipo }}</td>
+                                <td>{{ fila.numero }}</td>
+                                <td>{{ fila.periodo }}</td>
+                                <td>{{ fila.fecha_inicial }}</td>
+                                <td>{{ fila.fecha_final }}</td>
+                                <td>{{ fila.contrato }}</td>
+                                <td>{{ fila.empleado }}</td>
+                                <td>{{ fila.cod_personal }}</td>
+                                <td class="text-center">
+                                    <div class="d-flex justify-content-center align-items-center gap-2">
+                                        <a href="#"
+                                           class="btn btn-sm btn-outline-danger rounded-3"
+                                           title="Descargar PDF">
+                                            <i class="bi bi-file-earmark-pdf"></i>
+                                        </a>
+
+                                        <a href="#"
+                                           class="btn btn-sm btn-outline-primary rounded-3 btn-ver-detalle"
+                                           data-bs-toggle="modal"
+                                           data-bs-target="#modalDetalle"
+                                           data-tipo="{{ fila.tipo }}"
+                                           data-numero="{{ fila.numero }}"
+                                           title="Ver detalle">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="9" class="text-center text-muted py-4">
+                                    No se encontraron registros para los filtros seleccionados.
+                                </td>
+                            </tr>
+                        {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

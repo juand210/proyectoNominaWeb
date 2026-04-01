@@ -4,34 +4,32 @@
 
 <div class="row mb-4">
     <div class="col-12">
-        <h2>Certificados</h2>
-    </div>
-</div>
-
-<div class="row mb-4">
-    <div class="col-12">
-        <div class="card shadow-sm border-0">
-            <div class="card-header bg-gradient-primary text-white py-3 bg-primary">
-                <h5 class="card-title mb-0 text-center fs-6 fw-semibold">Seleccionar Tipo de Certificado</h5>
+        <div class="card shadow-sm border-0 rounded-4">
+            <div class="card-header bg-primary text-white py-2 rounded-top-4">
+                <div class="d-flex align-items-center justify-content-center gap-2">
+                    <i class="bi bi-file-earmark-text fs-5"></i>
+                    <h5 class="card-title mb-0 fs-6 fw-semibold">Seleccionar Tipo de Certificado</h5>
+                </div>
             </div>
+
             <form method="POST" action="/certificados" id="formCertificados">
-                <div class="card-body py-4">
+                <div class="card-body p-4">
                     <!-- Tipo de certificado -->
-                    <div class="row justify-content-center gy-3 mb-4">
+                    <div class="row justify-content-center gy-2 mb-4">
                         <!-- Opción 1: Laboral -->
-                        <div class="col-md-4 col-sm-6">
-                            <label class="d-block border rounded-3 p-3 bg-white text-center shadow-sm h-100"
+                        <div class="col-md-3 col-sm-5">
+                            <label class="d-block border rounded-3 p-2 bg-white text-center shadow-sm h-100"
                                    style="cursor: pointer;" for="laboral">
-                                <input class="form-check-input mb-2"
+                                <input class="form-check-input mb-1"
                                        type="radio"
                                        name="tipo_certificado"
                                        id="laboral"
                                        value="laboral" required
-                                       {% if tipo_certificado == 'laboral' %}checked{% endif %}>
+                                       {% if tipo_certificado== 'laboral' %}checked{% endif %}>
                                 <div>
-                                    <i class="bi bi-briefcase fs-3 text-primary mb-2 d-block"></i>
-                                    <span class="d-block h6 text-dark mb-1">Laboral</span>
-                                    <small class="text-muted">
+                                    <i class="bi bi-briefcase fs-4 text-primary mb-1 d-block"></i>
+                                    <span class="d-block fw-semibold text-dark mb-1" style="font-size: 0.95rem;">Laboral</span>
+                                    <small class="text-muted" style="font-size: 0.78rem; line-height: 1.2;">
                                         Consulta certificados laborales de empleados.
                                     </small>
                                 </div>
@@ -39,77 +37,78 @@
                         </div>
 
                         <!-- Opción 2: Ingresos -->
-                        <div class="col-md-4 col-sm-6">
-                            <label class="d-block border rounded-3 p-3 bg-white text-center shadow-sm h-100"
+                        <div class="col-md-3 col-sm-5">
+                            <label class="d-block border rounded-3 p-2 bg-white text-center shadow-sm h-100"
                                    style="cursor: pointer;" for="ingresos">
-                                <input class="form-check-input mb-2"
+                                <input class="form-check-input mb-1"
                                        type="radio"
                                        name="tipo_certificado"
                                        id="ingresos"
                                        value="ingresos" required
-                                       {% if tipo_certificado == 'ingresos' %}checked{% endif %}>
+                                       {% if tipo_certificado== 'ingresos' %}checked{% endif %}>
                                 <div>
-                                    <i class="bi bi-cash-coin fs-3 text-success mb-2 d-block"></i>
-                                    <span class="d-block h6 text-dark mb-1">Ingresos</span>
-                                    <small class="text-muted">
+                                    <i class="bi bi-cash-coin fs-4 text-success mb-1 d-block"></i>
+                                    <span class="d-block fw-semibold text-dark mb-1" style="font-size: 0.95rem;">Ingresos</span>
+                                    <small class="text-muted" style="font-size: 0.78rem; line-height: 1.2;">
                                         Consulta certificados de ingresos y retenciones.
                                     </small>
                                 </div>
                             </label>
                         </div>
                     </div>
-                </div>
-
 
                     <!-- Filtros Laboral -->
                     <div id="filtrosLaboral" class="mb-4 {% if tipo_certificado != 'laboral' %}d-none{% endif %}">
                         <div class="text-center mb-3">
-                            <h6 class="text-center mb-3 text-muted small fw-semibold">Filtros Laboral</h6>
+                            <h6 class="text-muted small fw-semibold mb-2">Filtros Laboral</h6>
                             <small class="text-muted">
                                 Selecciona el estado del certificado a consultar.
                             </small>
                         </div>
-                        <div class="row justify-content-center gy-3">
+
+                        <div class="row justify-content-center gy-2">
                             <!-- Todos -->
-                            <div class="col-md-4 col-sm-6">
-                                <label class="d-block border rounded-3 p-3 bg-white text-center shadow-sm"
+                            <div class="col-md-3 col-sm-5">
+                                <label class="d-block border rounded-3 p-2 bg-white text-center shadow-sm h-100"
                                        style="cursor: pointer;" for="todos">
-                                    <input class="form-check-input mb-2"
+                                    <input class="form-check-input mb-1"
                                            type="radio" name="estado" id="todos" value="TODOS"
-                                           {% if estado == 'TODOS' %}checked{% endif %}>
+                                           {% if estado== 'TODOS' %}checked{% endif %}>
                                     <div>
-                                        <span class="d-block h6 text-dark mb-1">Todos</span>
-                                        <small class="text-muted">
+                                        <span class="d-block fw-semibold text-dark mb-1" style="font-size: 0.95rem;">Todos</span>
+                                        <small class="text-muted" style="font-size: 0.78rem; line-height: 1.2;">
                                             Lista completa de activos y retirados.
                                         </small>
                                     </div>
                                 </label>
                             </div>
+
                             <!-- Activos -->
-                            <div class="col-md-4 col-sm-6">
-                                <label class="d-block border rounded-3 p-3 bg-white text-center shadow-sm"
+                            <div class="col-md-3 col-sm-5">
+                                <label class="d-block border rounded-3 p-2 bg-white text-center shadow-sm h-100"
                                        style="cursor: pointer;" for="activo">
-                                    <input class="form-check-input mb-2"
+                                    <input class="form-check-input mb-1"
                                            type="radio" name="estado" id="activo" value="ACTIVO"
-                                           {% if estado == 'ACTIVO' %}checked{% endif %}>
+                                           {% if estado== 'ACTIVO' %}checked{% endif %}>
                                     <div>
-                                        <span class="d-block h6 text-dark mb-1">Activos</span>
-                                        <small class="text-muted">
+                                        <span class="d-block fw-semibold text-dark mb-1" style="font-size: 0.95rem;">Activos</span>
+                                        <small class="text-muted" style="font-size: 0.78rem; line-height: 1.2;">
                                             Solo empleados aún vinculados a la empresa.
                                         </small>
                                     </div>
                                 </label>
                             </div>
+
                             <!-- Retirados -->
-                            <div class="col-md-4 col-sm-6">
-                                <label class="d-block border rounded-3 p-3 bg-white text-center shadow-sm"
+                            <div class="col-md-3 col-sm-5">
+                                <label class="d-block border rounded-3 p-2 bg-white text-center shadow-sm h-100"
                                        style="cursor: pointer;" for="retirado">
-                                    <input class="form-check-input mb-2"
+                                    <input class="form-check-input mb-1"
                                            type="radio" name="estado" id="retirado" value="RETIRADO"
-                                           {% if estado == 'RETIRADO' %}checked{% endif %}>
+                                           {% if estado== 'RETIRADO' %}checked{% endif %}>
                                     <div>
-                                        <span class="d-block h6 text-dark mb-1">Retirados</span>
-                                        <small class="text-muted">
+                                        <span class="d-block fw-semibold text-dark mb-1" style="font-size: 0.95rem;">Retirados</span>
+                                        <small class="text-muted" style="font-size: 0.78rem; line-height: 1.2;">
                                             Empleados que han finalizado su relación laboral.
                                         </small>
                                     </div>
@@ -121,163 +120,83 @@
                     <!-- Filtros Ingresos -->
                     <div id="filtrosIngresos" class="mb-4 {% if tipo_certificado != 'ingresos' %}d-none{% endif %}">
                         <div class="text-center mb-3">
-                            <h6 class="text-muted small fw-semibold">
-                                Filtros Ingresos / Retención
-                            </h6>
+                            <h6 class="text-muted small fw-semibold mb-2">Filtros Ingresos / Retención</h6>
                             <small class="text-muted">
-                                Busca el periodo de ingresos el cual se va a consultar.
+                                Busca el periodo de ingresos que se va a consultar.
                             </small>
                         </div>
 
-                    <div class="row justify-content-center gy-2">
-                        <div class="col-md-4 col-sm-8">
-                            <label class="form-label d-block text-center small fw-semibold text-muted">
-                                Periodo
-                            </label>
-                            <select class="form-select form-select-sm rounded-3" name="periodo_ingresos">
-                                <option value="">Seleccionar periodo...</option>
+                        <div class="row justify-content-center gy-2">
+                            <div class="col-md-4 col-sm-8">
+                                <label class="form-label d-block text-center small fw-semibold text-muted mb-1">
+                                    Periodo
+                                </label>
+                                <select class="form-select form-select-sm rounded-3" name="periodo_ingresos">
+                                    <option value="">Seleccionar periodo...</option>
                                     {% for anio in anios %}
-                                        <option value="{{ anio }}"
-                                        {% if periodo_ingresos == anio %}selected{% endif %}>
+                                    <option value="{{ anio }}"
+                                            {% if periodo_ingresos== anio %}selected{% endif %}>
                                         {{ anio }}
-                                </option>
-                                {% endfor %}
-                            </select>
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="card-footer text-end">
-                    <button type="submit" class="btn btn-primary btn-lg px-2 py-2 shadow-lg border-0 fw-semibold">
-                        <i class="bi bi-search fs-5 me-3"></i> Consultar certificado
-                    </button>
+                    <div class="border-top mt-4 pt-3">
+                        <div class="d-flex justify-content-end">
+                            <button type="submit" class="btn btn-primary px-4 py-2 fw-semibold rounded-3 shadow-sm">
+                                <i class="bi bi-file-earmark-check me-2"></i>
+                                Consultar certificado
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </form>
         </div>
     </div>
 </div>
 
-<!-- Resultados -->
-<div class="row">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
-                <h5 class="card-title mb-0">
-                    Resultados
-                    {% if tipo_certificado == 'laboral' %}
-                        Vínculos Laborales
-                    {% else %}
-                        Ingresos y Retenciones
-                    {% endif %}
-                </h5>
-                <span class="badge bg-secondary">{{ datos_certificado|length }} registros</span>
-            </div>
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-striped mb-0">
-                        <thead class="table-light">
-                            {% if tipo_certificado == 'laboral' %}
-                                <tr>
-                                    <th>Tipo Certificado</th>
-                                    <th>Nº Certificado</th>
-                                    <th>Identificación</th>
-                                    <th>Nº Contrato</th>
-                                    <th>Fecha Contrato</th>
-                                    <th>Fecha Ingreso</th>
-                                    <th>Fecha Retiro</th>
-                                    <th>Sueldo Básico</th>
-                                    <th>Estado</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            {% else %}
-                                <tr>
-                                    <th>Identificacion</th>
-                                    <th>Contrato</th>
-                                    <th>Salarios</th>
-                                    <th>Cesantias e intereses</th>
-                                    <th>Gastos de representacion</th>
-                                    <th>Pension jubilacion, vejez e invalidez</th>
-                                    <th>Otros ingresos</th>
-                                    <th>Total ingresos brutos</th>
-                                    <th>Aportes obligatorios de salud</th>
-                                    <th>Aportes obligatorios de pension</th>
-                                    <th>Aportes voluntarios</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            {% endif %}
-                        </thead>
-                        <tbody>
-                            {% if datos_certificado %}
-                                {% for fila in datos_certificado %}
-                                    {% if tipo_certificado == 'laboral' %}
-                                        <tr>
-                                            <td>{{ fila.tipo }}</td>
-                                            <td>{{ fila.numero }}</td>
-                                            <td>{{ fila.cod_personal }}</td>
-                                            <td>{{ fila.cod_vinculo }}</td>
-                                            <td>{{ fila.fecha }}</td>
-                                            <td>{{ fila.fecha_ingreso }}</td>
-                                            <td>{{ fila.fecha_retiro }}</td>
-                                            <td>{{ fila.sueldo }}</td>
-                                            <td>
-                                                <span class="badge bg-{{ 'success' if fila.estado == 'ACTIVO' else 'danger' if fila.estado == 'RETIRADO' else 'warning' }}">
-                                                    {{ fila.estado }}
-                                                </span>
-                                            </td>
-                                            <td>
-                                                <a href="/certificados/laboral/pdf/{{ fila.numero }}"
-                                                   class="btn btn-sm btn-outline-primary">
-                                                    <i class="bi bi-file-earmark-pdf"></i>
-                                                </a>
-                                            </td>
-                                        </tr>
-                                    {% else %}
-                                        <tr>
-                                            <td>{{ fila.cod_personal }}</td>
-                                            <td>{{ fila.cod_vinculo }}</td>
-                                            <td>{{ fila.salario }}</td>
-                                            <td>{{ fila.cesantias }}</td>
-                                            <td>{{ fila.gasto }}</td>
-                                            <td>{{ fila.pension }}</td>
-                                            <td>{{ fila.otros }}</td>
-                                            <td>{{ fila.total_ingresos }}</td>
-                                            <td>{{ fila.aportes }}</td>
-                                            <td>{{ fila.aportes_pension }}</td>
-                                            <td>{{ fila.aportes_voluntarios }}</td>
-                                            <td>
-                                                <a href="/certificados/ingresos/pdf/{{ fila.periodo }}"
-                                                   class="btn btn-sm btn-outline-primary">
-                                                    <i class="bi bi-file-earmark-pdf"></i>
-                                                </a>
-                                            </td>
-                                        </tr>
-                                    {% endif %}
-                                {% endfor %}
-                            {% endif %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
+<div id="contenedor-tabla">
+    {% include "partials/tabla_certificado.html" %}
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const radiosPrincipales = document.querySelectorAll('input[name="tipo_certificado"]');
-    const filtrosLaboral = document.getElementById('filtrosLaboral');
-    const filtrosIngresos = document.getElementById('filtrosIngresos');
+    document.addEventListener('DOMContentLoaded', function () {
+        const radiosPrincipales = document.querySelectorAll('input[name="tipo_certificado"]');
+        const filtrosLaboral = document.getElementById('filtrosLaboral');
+        const filtrosIngresos = document.getElementById('filtrosIngresos');
 
-    radiosPrincipales.forEach(radio => {
-        radio.addEventListener('change', function() {
-            if (this.value === 'laboral') {
-                filtrosLaboral.classList.remove('d-none');
-                filtrosIngresos.classList.add('d-none');
-            } else {
-                filtrosLaboral.classList.add('d-none');
-                filtrosIngresos.classList.remove('d-none');
-            }
+        radiosPrincipales.forEach(radio => {
+            radio.addEventListener('change', function () {
+                if (this.value === 'laboral') {
+                    filtrosLaboral.classList.remove('d-none');
+                    filtrosIngresos.classList.add('d-none');
+                } else {
+                    filtrosLaboral.classList.add('d-none');
+                    filtrosIngresos.classList.remove('d-none');
+                }
+            });
         });
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById("formCertificados");
+    const contenedor = document.getElementById("contenedor-tabla");
+
+    form.addEventListener("submit", async function (e) {
+        e.preventDefault();
+
+        const formData = new FormData(form);
+
+        const response = await fetch("/certificados", {
+            method: "POST",
+            body: formData
+        });
+
+        const html = await response.text();
+        contenedor.innerHTML = html;
     });
 });
 </script>

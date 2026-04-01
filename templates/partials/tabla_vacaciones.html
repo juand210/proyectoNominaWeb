@@ -1,0 +1,89 @@
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow-sm border-0 rounded-4">
+            <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white py-2 rounded-top-4">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-calendar2-range fs-5"></i>
+                    <h5 class="card-title mb-0 fs-6 fw-semibold">
+                        Resultados
+                        {% if tipo_vacaciones == 'liquida_vacacion' %}
+                        Liquidados en el sistema
+                        {% else %}
+                        No liquidados en el sistema
+                        {% endif %}
+                    </h5>
+                </div>
+                <span class="badge bg-light text-dark rounded-pill">
+                    {{ datos_vacaciones|length }} registros
+                </span>
+            </div>
+
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                        <tr>
+                            <th class="small text-muted fw-semibold">Identificación</th>
+                            <th class="small text-muted fw-semibold">Nº Contrato</th>
+                            <th class="small text-muted fw-semibold">Últ. Vacaciones Desde</th>
+                            <th class="small text-muted fw-semibold">Últ. Vacaciones Hasta</th>
+                            <th class="small text-muted fw-semibold">Días Vac.</th>
+                            <th class="small text-muted fw-semibold">Pendiente Desde</th>
+                            <th class="small text-muted fw-semibold">Pendiente Hasta</th>
+                            <th class="small text-muted fw-semibold">Días Pendientes</th>
+                            <th class="small text-muted fw-semibold">Próx. Vacaciones</th>
+                            <th class="small text-muted fw-semibold">Días a Pagar</th>
+                            {% if tipo_vacaciones == 'liquida_vacacion' %}
+                            <th class="small text-muted fw-semibold text-center">Estado</th>
+                            <th class="small text-muted fw-semibold text-center">Acciones</th>
+                            {% endif %}
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% if datos_vacaciones %}
+                            {% for fila in datos_vacaciones %}
+                            <tr>
+                                <td class="fw-semibold">{{ fila.cod_personal }}</td>
+                                <td>{{ fila.cod_vinculo }}</td>
+                                <td>{{ fila.fecha_inicial }}</td>
+                                <td>{{ fila.hasta }}</td>
+                                <td>{{ fila.dias_compensar }}</td>
+                                <td>{{ fila.desde }}</td>
+                                <td>{{ fila.hasta }}</td>
+                                <td>{{ fila.dias_compensar }}</td>
+                                <td>{{ fila.fecha_inicial }}</td>
+                                <td>{{ fila.dias_diferencia }}</td>
+
+                                {% if tipo_vacaciones == 'liquida_vacacion' %}
+                                <td class="text-center">
+                                    <span class="badge bg-{{ 'success' if fila.estado == 'ACTIVO' else 'danger' if fila.estado == 'RETIRADO' else 'warning' }}">
+                                        {{ fila.estado }}
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <div class="d-flex justify-content-center align-items-center gap-2">
+                                        <a href="/certificados/laboral/pdf/{{ fila.numero }}"
+                                           class="btn btn-sm btn-outline-danger rounded-3"
+                                           title="Descargar PDF">
+                                            <i class="bi bi-file-earmark-pdf"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                                {% endif %}
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="{% if tipo_vacaciones == 'liquida_vacacion' %}12{% else %}10{% endif %}"
+                                    class="text-center text-muted py-4">
+                                    No se encontraron registros para los filtros seleccionados.
+                                </td>
+                            </tr>
+                        {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

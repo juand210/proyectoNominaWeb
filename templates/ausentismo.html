@@ -1,0 +1,210 @@
+{% extends "home.html" %}
+
+{% block content %}
+
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card shadow-sm border-0 rounded-4">
+            <div class="card-header bg-primary text-white py-2 rounded-top-4">
+                <div class="d-flex align-items-center justify-content-center gap-2">
+                    <i class="bi bi-envelope-paper fs-5"></i>
+                    <h5 class="card-title mb-0 fs-6 fw-semibold">
+                        Gestión de Ausentismos
+                    </h5>
+                </div>
+            </div>
+
+            <div class="card-body p-4">
+                <!-- Opciones principales -->
+                <div class="row justify-content-center gy-2 mb-4">
+                    <div class="col-md-3 col-sm-5">
+                        <label class="d-block border rounded-3 p-2 bg-white text-center shadow-sm h-100"
+                               style="cursor: pointer;" for="op_reportar">
+                            <input class="form-check-input mb-1"
+                                   type="radio"
+                                   name="tipo_ausentismo"
+                                   id="op_reportar"
+                                   value="reportar"
+                            >
+                            <div>
+                                <i class="bi bi-send fs-4 text-primary mb-1 d-block"></i>
+                                <span class="d-block fw-semibold text-dark mb-1" style="font-size: 0.95rem;">
+                                    Reportar ausentismo
+                                </span>
+                                <small class="text-muted" style="font-size: 0.78rem; line-height: 1.2;">
+                                    Envía un correo a Recursos Humanos con el detalle.
+                                </small>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="col-md-3 col-sm-5">
+                        <label class="d-block border rounded-3 p-2 bg-white text-center shadow-sm h-100"
+                               style="cursor: pointer;" for="op_reporte">
+                            <input class="form-check-input mb-1"
+                                   type="radio"
+                                   name="tipo_ausentismo"
+                                   id="op_reporte"
+                                   value="reporte">
+                            <div>
+                                <i class="bi bi-table fs-4 text-success mb-1 d-block"></i>
+                                <span class="d-block fw-semibold text-dark mb-1" style="font-size: 0.95rem;">
+                                    Reporte de ausentismos
+                                </span>
+                                <small class="text-muted" style="font-size: 0.78rem; line-height: 1.2;">
+                                    Consulta y visualiza los ausentismos reportados.
+                                </small>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Formulario reportar -->
+                <div id="bloqueReportar">
+                    <div class="card border-0 shadow-sm rounded-4">
+                        <div class="card-header bg-primary text-white py-2 rounded-top-4">
+                            <div class="d-flex align-items-center justify-content-center gap-2">
+                                <i class="bi bi-envelope-paper fs-5"></i>
+                                <h5 class="card-title mb-0 fs-6 fw-semibold">
+                                    Reportar ausentismo a Recursos Humanos
+                                </h5>
+                            </div>
+                        </div>
+
+                        <form method="POST" action="/ausentismo" enctype="multipart/form-data">
+                            <div class="card-body p-4">
+
+                                <div class="row justify-content-center gy-3 mb-4">
+                                    <div class="col-md-10">
+                                        <label for="destinatarios" class="form-label small fw-semibold text-muted mb-1">
+                                            Correo o correos destino
+                                        </label>
+                                        <input
+                                                type="text"
+                                                class="form-control rounded-3"
+                                                id="destinatarios"
+                                                name="destinatarios"
+                                                placeholder="ejemplo1@gmail.com, ejemplo2@gmail.com"
+                                                required
+                                        >
+                                        <small class="text-muted">
+                                            Puedes escribir uno o varios correos separados por coma.
+                                        </small>
+                                    </div>
+                                </div>
+
+                                <div class="row justify-content-center gy-3 mb-4">
+                                    <div class="col-md-10">
+                                        <label for="asunto" class="form-label small fw-semibold text-muted mb-1">
+                                            Asunto del correo
+                                        </label>
+                                        <input
+                                                type="text"
+                                                class="form-control rounded-3"
+                                                id="asunto"
+                                                name="asunto"
+                                                placeholder="Ej. Reporte de ausentismo"
+                                                required
+                                        >
+                                    </div>
+                                </div>
+
+                                <div class="row justify-content-center gy-3 mb-4">
+                                    <div class="col-md-10">
+                                        <label for="cuerpo" class="form-label small fw-semibold text-muted mb-1">
+                                            Cuerpo del correo
+                                        </label>
+                                        <textarea
+                                                class="form-control rounded-3"
+                                                id="cuerpo"
+                                                name="cuerpo"
+                                                rows="8"
+                                                placeholder="Escribe aquí el detalle del ausentismo..."
+                                                required
+                                        ></textarea>
+                                    </div>
+                                </div>
+
+                                <div class="row justify-content-center gy-3 mb-3">
+                                    <div class="col-md-10">
+                                        <label for="archivo" class="form-label small fw-semibold text-muted mb-1">
+                                            Adjuntar archivo
+                                        </label>
+                                        <input
+                                                type="file"
+                                                class="form-control rounded-3"
+                                                id="archivo"
+                                                name="archivo"
+                                                accept=".pdf,.doc,.docx,image/*"
+                                        >
+                                        <small class="text-muted">
+                                            Archivos permitidos: PDF, Word o imágenes.
+                                        </small>
+                                    </div>
+                                </div>
+
+                                <div class="border-top mt-4 pt-3">
+                                    <div class="d-flex justify-content-end">
+                                        <button type="submit"
+                                                class="btn btn-primary px-4 py-2 fw-semibold rounded-3 shadow-sm">
+                                            <i class="bi bi-send me-2"></i>
+                                            Enviar correo
+                                        </button>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Espacio para reporte -->
+                <div id="bloqueReporte" class="d-none">
+                    <div class="card border-0 shadow-sm rounded-4">
+                        <div class="card-header bg-primary text-white py-3 rounded-top-4">
+                            <div class="d-flex align-items-center justify-content-center gap-2">
+                                <i class="bi bi-table fs-5"></i>
+                                <h5 class="card-title mb-0 fs-6 fw-semibold">
+                                    Reporte de ausentismos
+                                </h5>
+                            </div>
+                        </div>
+
+                        <div class="card-body p-4">
+                            <div class="text-center text-muted py-5">
+                                Aquí irá el formulario del reporte de ausentismos.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const opReportar = document.getElementById("op_reportar");
+        const opReporte = document.getElementById("op_reporte");
+        const bloqueReportar = document.getElementById("bloqueReportar");
+        const bloqueReporte = document.getElementById("bloqueReporte");
+
+        function actualizarVista() {
+            if (opReportar.checked) {
+                bloqueReportar.classList.remove("d-none");
+                bloqueReporte.classList.add("d-none");
+            } else {
+                bloqueReportar.classList.add("d-none");
+                bloqueReporte.classList.remove("d-none");
+            }
+        }
+
+        opReportar.addEventListener("change", actualizarVista);
+        opReporte.addEventListener("change", actualizarVista);
+
+        actualizarVista();
+    });
+</script>
+
+{% endblock %}

@@ -1,142 +1,167 @@
 {% extends "home.html" %}
 
 {% block content %}
-<div class="row mb-4">
-    <div class="col-12">
-        <h2>Planillas de Nómina</h2>
-    </div>
-</div>
 
 <div class="row mb-4">
     <div class="col-12">
-        <div class="card shadow-sm border-0">
-            <div class="card-header bg-primary text-white py-3">
-                <h5 class="card-title mb-0 text-center fs-6 fw-semibold">Filtros de Nómina</h5>
+        <div class="card shadow-sm border-0 rounded-4">
+            <div class="card-header bg-primary text-white py-2 rounded-top-4">
+                <div class="d-flex align-items-center justify-content-center gap-2">
+                    <i class="bi bi-receipt-cutoff fs-5"></i>
+                    <h5 class="card-title mb-0 fs-6 fw-semibold">Filtros de Nómina</h5>
+                </div>
             </div>
-            <form method="POST" action="/nomina">
-                <div class="card-body py-4">
+
+            <form method="POST" action="/nomina" id="formNomina">
+                <div class="card-body p-4">
                     <div class="row g-3">
-                        <!-- Fecha Inicio -->
-                        <div class="col-md-3 col-sm-6 mb-3">
-                            <label for="fecha_inicio" class="form-label fw-semibold">Fecha Inicio</label>
+                        <div class="col-md-3 col-sm-6">
+                            <label for="fecha_inicio" class="form-label small fw-semibold text-muted mb-1">
+                                Fecha Inicio
+                            </label>
                             <input type="date"
-                                   class="form-control form-control-sm"
+                                   class="form-control form-control-sm rounded-3"
                                    id="fecha_inicio"
                                    name="fecha_inicio"
                                    value="{{ fecha_inicio }}"
                                    required>
                         </div>
 
-                        <!-- Fecha Fin -->
-                        <div class="col-md-3 col-sm-6 mb-3">
-                            <label for="fecha_fin" class="form-label fw-semibold">Fecha Fin</label>
+                        <div class="col-md-3 col-sm-6">
+                            <label for="fecha_fin" class="form-label small fw-semibold text-muted mb-1">
+                                Fecha Fin
+                            </label>
                             <input type="date"
-                                   class="form-control form-control-sm"
+                                   class="form-control form-control-sm rounded-3"
                                    id="fecha_fin"
                                    name="fecha_fin"
                                    value="{{ fecha_fin }}"
                                    required>
                         </div>
 
-                        <!-- Tipo de Planilla -->
-                        <div class="col-md-3 col-sm-6 mb-3">
-                            <label for="tipo_planilla" class="form-label fw-semibold">Tipo de Planilla</label>
+                        <div class="col-md-3 col-sm-6">
+                            <label for="tipo_planilla" class="form-label small fw-semibold text-muted mb-1">
+                                Tipo de Planilla
+                            </label>
                             <select class="form-select form-select-sm rounded-3"
                                     id="tipo_planilla"
                                     name="tipo_planilla"
                                     required>
                                 <option value="">Seleccionar...</option>
                                 {% for clase, descripcion in tipos_planilla %}
-                                    <option value="{{ clase }}"
-                                            {% if tipo_planilla == clase %}selected{% endif %}>
-                                        {{ clase }} - {{ descripcion }}
-                                    </option>
+                                <option value="{{ clase }}"
+                                        {% if tipo_planilla == clase %}selected{% endif %}>
+                                    {{ clase }} - {{ descripcion }}
+                                </option>
                                 {% endfor %}
                             </select>
                         </div>
 
-                        <!-- Número de Planilla -->
-                        <div class="col-md-3 col-sm-6 mb-3">
-                            <label for="numero_planilla" class="form-label fw-semibold">Número de Planilla</label>
+                        <div class="col-md-3 col-sm-6">
+                            <label for="numero_planilla" class="form-label small fw-semibold text-muted mb-1">
+                                Número de Planilla
+                            </label>
                             <input type="text"
-                                   class="form-control form-control-sm"
+                                   class="form-control form-control-sm rounded-3"
                                    id="numero_planilla"
                                    name="numero_planilla"
-                                   value="{{ numero_planilla|default('') }}">
+                                   value="{{ numero_planilla|default('') }}"
+                                   placeholder="Ej. 10254">
                         </div>
                     </div>
 
-                    <!-- Mensaje de error -->
                     {% if error %}
-                        <div class="alert alert-danger alert-dismissible fade show mb-0 mt-3 small" role="alert">
-                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                            {{ error }}
-                        </div>
+                    <div class="alert alert-danger d-flex align-items-center mt-4 mb-0 small rounded-3" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                        <div>{{ error }}</div>
+                    </div>
                     {% endif %}
-                </div>
 
-                <div class="card-footer text-end">
-                    <button type="submit" class="btn btn-primary btn-lg px-4 py-2 shadow-sm fw-semibold">
-                        <i class="bi bi-search fs-5 me-2"></i> Consultar Nómina
-                    </button>
+                    <div class="border-top mt-4 pt-3">
+                        <div class="d-flex justify-content-end">
+                            <button type="submit" class="btn btn-primary px-4 py-2 fw-semibold rounded-3 shadow-sm">
+                                <i class="bi bi-journal-text me-2"></i>
+                                Consultar nóminas
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </form>
         </div>
     </div>
 </div>
 
-<div class="row">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center bg-primary">
-                <h5 class="card-title mb-0 text-white">Resultados de Nómina</h5>
-                <span class="badge bg-secondary">{{ datos_nomina|length }} registros</span>
+<div id="contenedor-tabla">
+    {% include "partials/tabla_nomina.html" %}
+</div>
+
+<div class="modal fade" id="modalDetalle" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-primary text-white py-2">
+                <i class="bi bi-receipt-cutoff fs-5"></i>
+                <h5 class="modal-title mb-0"> Detalle de nómina</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-striped mb-0">
-    <thead class="table-light">
-        <tr>
-            <th>Tipo Planilla</th>
-            <th>Nº Planilla</th>
-            <th>Periodo</th>
-            <th>Fecha Inicial</th>
-            <th>Fecha Fin</th>
-            <th>Contrato</th>
-            <th>Empleado</th>
-            <th>Cédula</th>
-            <th>Tipo Nomina</th>
-            <th>Concepto</th>
-            <th>Base</th>
-            <th>Devengo</th>
-            <th>Deducción</th>
-
-        </tr>
-    </thead>
-    <tbody>
-        {% for fila in datos_nomina %}
-        <tr>
-            <td>{{ fila.tipo }}</td>
-            <td>{{ fila.numero }}</td>
-            <td>{{ fila.periodo }}</td>
-            <td>{{ fila.fecha_inicial }}</td>
-            <td>{{ fila.fecha_final }}</td>
-            <td>{{ fila.contrato }}</td>
-            <td>{{ fila.empleado }}</td>
-            <td>{{ fila.cedula }}</td>
-            <td>{{ fila.nombre_tipo_nom }}</td>
-            <td>{{ fila.nombre_concepto }}</td>
-            <td>{{ fila.base }}</td>
-            <td class="fw-bold text-success">{{ fila.devengo }}</td>
-            <td class="fw-bold text-danger">{{ fila.deduccion }}</td>
-
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-                </div>
+            <div class="modal-body p-3" id="contenidoDetalle">
+                <div class="text-center text-muted py-4">Cargando detalle...</div>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById("formNomina");
+    const contenedorTabla = document.getElementById("contenedor-tabla");
+    const contenidoDetalle = document.getElementById("contenidoDetalle");
+
+    form.addEventListener("submit", async function (e) {
+        e.preventDefault();
+
+        const formData = new FormData(form);
+
+        const response = await fetch("/nomina", {
+            method: "POST",
+            body: formData
+        });
+
+        const html = await response.text();
+        contenedorTabla.innerHTML = html;
+        registrarEventosDetalle();
+    });
+
+    function registrarEventosDetalle() {
+        document.querySelectorAll(".btn-ver-detalle").forEach(btn => {
+            btn.addEventListener("click", async function () {
+                const tipo = this.dataset.tipo;
+                const numero = this.dataset.numero;
+                const fechaInicio = document.getElementById("fecha_inicio").value;
+                const fechaFin = document.getElementById("fecha_fin").value;
+
+                contenidoDetalle.innerHTML = `
+                    <div class="text-center text-muted py-4">Cargando detalle...</div>
+                `;
+
+                const formData = new FormData();
+                formData.append("tipo", tipo);
+                formData.append("numero", numero);
+                formData.append("fecha_inicio", fechaInicio);
+                formData.append("fecha_fin", fechaFin);
+
+                const response = await fetch("/nomina/detalle", {
+                    method: "POST",
+                    body: formData
+                });
+
+                const html = await response.text();
+                contenidoDetalle.innerHTML = html;
+            });
+        });
+    }
+
+    registrarEventosDetalle();
+});
+</script>
+
 {% endblock %}

@@ -1,121 +1,103 @@
 {% extends "home.html" %}
 
 {% block content %}
-<div class="row mb-4">
-    <div class="col-12">
-        <h2>Vacaciones</h2>
-    </div>
-</div>
 
 <div class="row mb-4">
     <div class="col-12">
-        <div class="card shadow-sm border-0">
-            <div class="card-header bg-gradient-primary text-white py-3 bg-primary">
-                <h5 class="card-title mb-0 text-center fs-6 fw-semibold">
-                    Seleccionar tipo de consulta para vacaciones
-                </h5>
+        <div class="card shadow-sm border-0 rounded-4">
+            <div class="card-header bg-primary text-white py-2 rounded-top-4">
+                <div class="d-flex align-items-center justify-content-center gap-2">
+                    <i class="bi bi-calendar2-range fs-5"></i>
+                    <h5 class="card-title mb-0 fs-6 fw-semibold">
+                        Seleccionar tipo de consulta para vacaciones
+                    </h5>
+                </div>
             </div>
 
-            <form method="POST" action="/vacaciones" id="formCertificados">
-                <div class="card-body py-4">
-                    <div class="row justify-content-center gy-3 mb-4">
-                        <div class="col-md-4 col-sm-6">
-                            <label class="d-block border rounded-3 p-3 bg-white text-center shadow-sm h-100"
+            <form method="POST" action="/vacaciones" id="formVacaciones">
+                <div class="card-body p-4">
+                    <div class="row justify-content-center gy-2 mb-4">
+                        <div class="col-md-3 col-sm-5">
+                            <label class="d-block border rounded-3 p-2 bg-white text-center shadow-sm h-100"
                                    style="cursor: pointer;" for="liquida_vacacion">
-                                <input class="form-check-input mb-2"
+                                <input class="form-check-input mb-1"
                                        type="radio"
                                        name="tipo_vacaciones"
                                        id="liquida_vacacion"
                                        value="liquida_vacacion" required
-                                       {% if tipo_vacaciones == 'liquida_vacacion' %}checked{% endif %}>
+                                       {% if tipo_vacaciones== 'liquida_vacacion' %}checked{% endif %}>
                                 <div>
-                                    <span class="d-block h6 text-dark mb-1">Liquidados</span>
-                                    <small class="text-muted">
+                                    <i class="bi bi-check2-square fs-4 text-primary mb-1 d-block"></i>
+                                    <span class="d-block fw-semibold text-dark mb-1" style="font-size: 0.95rem;">
+                                        Liquidados
+                                    </span>
+                                    <small class="text-muted" style="font-size: 0.78rem; line-height: 1.2;">
                                         Consulta de planillas liquidadas en el sistema.
                                     </small>
                                 </div>
                             </label>
                         </div>
 
-                        <div class="col-md-4 col-sm-6">
-                            <label class="d-block border rounded-3 p-3 bg-white text-center shadow-sm h-100"
+                        <div class="col-md-3 col-sm-5">
+                            <label class="d-block border rounded-3 p-2 bg-white text-center shadow-sm h-100"
                                    style="cursor: pointer;" for="no_liquida_vacaciones">
-                                <input class="form-check-input mb-2"
+                                <input class="form-check-input mb-1"
                                        type="radio"
                                        name="tipo_vacaciones"
                                        id="no_liquida_vacaciones"
                                        value="no_liquida_vacaciones" required
-                                       {% if tipo_vacaciones == 'no_liquida_vacaciones' %}checked{% endif %}>
+                                       {% if tipo_vacaciones== 'no_liquida_vacaciones' %}checked{% endif %}>
                                 <div>
-                                    <span class="d-block h6 text-dark mb-1">No liquidados</span>
-                                    <small class="text-muted">
+                                    <i class="bi bi-clock-history fs-4 text-warning mb-1 d-block"></i>
+                                    <span class="d-block fw-semibold text-dark mb-1" style="font-size: 0.95rem;">
+                                        No liquidados
+                                    </span>
+                                    <small class="text-muted" style="font-size: 0.78rem; line-height: 1.2;">
                                         Consulta de planillas no liquidadas en el sistema.
                                     </small>
                                 </div>
                             </label>
                         </div>
                     </div>
-                </div>
 
-                <div class="card-footer text-end">
-                    <button type="submit" class="btn btn-primary btn-lg px-2 py-2 shadow-lg border-0 fw-semibold">
-                        <i class="bi bi-search fs-5 me-3"></i> Consultar vacaciones
-                    </button>
+                    <div class="border-top mt-4 pt-3">
+                        <div class="d-flex justify-content-end">
+                            <button type="submit" class="btn btn-primary px-4 py-2 fw-semibold rounded-3 shadow-sm">
+                                <i class="bi bi-calendar-check me-2"></i>
+                                Consultar vacaciones
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </form>
         </div>
     </div>
 </div>
 
-<div class="row">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center bg-primary">
-                <h5 class="card-title mb-0 text-white">Resultados de Nómina</h5>
-                <span class="badge bg-secondary">{{ datos_nomina|length }} registros</span>
-            </div>
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-striped mb-0">
-    <thead class="table-light">
-        <tr>
-            <th>Identificación</th>
-            <th>Nº Contrato</th>
-            <th>Últ. Vacaciones Desde</th>
-            <th>Últ. Vacaciones Hasta</th>
-            <th>Días Vac.</th>
-            <th>Pendiente Desde</th>
-            <th>Pendiente Hasta</th>
-            <th>Días Pendientes</th>
-            <th>Próx. Vacaciones</th>
-            <th>Días a Pagar</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for fila in datos_nomina %}
-        <tr>
-            <td>{{ fila.cod_personal }}</td>
-            <td>{{ fila.numero }}</td>
-            <td>{{ fila.periodo }}</td>
-            <td>{{ fila.fecha_inicial }}</td>
-            <td>{{ fila.fecha_final }}</td>
-            <td>{{ fila.contrato }}</td>
-            <td>{{ fila.empleado }}</td>
-            <td>{{ fila.cedula }}</td>
-            <td>{{ fila.nombre_tipo_nom }}</td>
-            <td>{{ fila.nombre_concepto }}</td>
-            <td>{{ fila.base }}</td>
-            <td class="fw-bold text-success">{{ fila.devengo }}</td>
-            <td class="fw-bold text-danger">{{ fila.deduccion }}</td>
-
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-                </div>
-            </div>
-        </div>
-    </div>
+<div id="contenedor-tabla">
+    {% include "partials/tabla_vacaciones.html" %}
 </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById("formVacaciones");
+    const contenedor = document.getElementById("contenedor-tabla");
+
+    form.addEventListener("submit", async function (e) {
+        e.preventDefault();
+
+        const formData = new FormData(form);
+
+        const response = await fetch("/vacaciones", {
+            method: "POST",
+            body: formData
+        });
+
+        const html = await response.text();
+        contenedor.innerHTML = html;
+    });
+});
+</script>
+
 
 {% endblock %}

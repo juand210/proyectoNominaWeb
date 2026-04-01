@@ -62,7 +62,7 @@ main {
   --bs-btn-bg: var(--bs-primary);
   --bs-btn-border-color: var(--bs-primary);
   --bs-btn-hover-color: #fff;
-  --bs-btn-hover-bg: #091c3d;
+  /*--bs-btn-hover-bg: #08fff1735;*/
   --bs-btn-hover-border-color: #091c3d;
   --bs-btn-active-bg: #081735;
   --bs-btn-active-border-color: #081735;
@@ -92,43 +92,5 @@ main {
   box-shadow: 0 2px 10px rgba(0,0,0,0.05);
 }
 
-/* Botones */
-.btn {
-  border-radius: 10px;
-  font-weight: 500;
-  padding: 10px 24px;
-  transition: all 0.3s ease;
-}
-.btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-}
 
-/* Alerts y badges */
-.alert, .badge {
-  border-radius: 20px;
-}
 
-/* Dark mode ajustes */
-[data-bs-theme="dark"] .card {
-  background-color: #1a1a2e;
-  border-color: #2d2d44;
-}
-[data-bs-theme="dark"] .table-hover tbody tr:hover {
-  background-color: rgba(255,255,255,0.05);
-}
-
-.form-check-input:checked {
-    border-width: 2px;
-}
-
-/* Opcional: resaltar el radio cuando tiene foco */
-.form-check-input:focus {
-    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-}
-
-/* (Alternativa para hacer el punto más visible) */
-.form-check-input:checked {
-    background-color: #0d6efd;
-    border-color: #0d6efd;
-}
